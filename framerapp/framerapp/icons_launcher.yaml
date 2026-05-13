@@ -1,0 +1,31 @@
+icons_launcher:
+  image_path: "assets/logo/appicon.png"
+  platforms:
+    android:
+      enable: true
+      image_path: "assets/logo/appicon.png"
+      notification_image: "assets/logo/appicon.png"
+      # adaptive_background_color: '#ffffff'
+      adaptive_background_image: "assets/logo/appicon.png"
+      adaptive_foreground_image: "assets/logo/appicon.png"
+      adaptive_round_image: "assets/logo/appicon.png"
+      adaptive_monochrome_image: "assets/logo/appicon.png"
+    ios:
+      enable: true
+      image_path: "assets/logo/appicon.png"
+      # For iOS 18+ (support dark and tinted)
+      dark_path: "assets/logo/appicon.png"
+      tinted_path: "assets/logo/appicon.png"
+    web:
+      enable: true
+      image_path: "assets/logo/appicon.png"
+      favicon_path: "assets/logo/appicon.png"
+    macos:
+      enable: false
+      image_path: "assets/logo/appicon.png"
+    windows:
+      enable: false
+      image_path: "assets/logo/appicon.png"
+    linux:
+      enable: false
+      image_path: "assets/logo/appicon.png"

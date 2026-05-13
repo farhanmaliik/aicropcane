@@ -1,0 +1,192 @@
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans&family=Noto+Nastaliq+Urdu:wght@400;500;600;700&display=swap');
+@import "tailwindcss";
+
+:root {
+    --primary: #0e6e47;
+    --secondary: #13955d;
+    --dark: #0c4831;
+    --light: #d5f6e1;
+    --x-light: #edfcf3;
+}
+
+@font-face {
+    font-family: Montserrat;
+    src: url('./assets/fonts/Montserrat_Regular.ttf');
+}
+
+* {
+    font-family: Montserrat;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    font-weight: bold;
+}
+
+h1 {
+    font-size: 2.5rem;
+}
+
+h2 {
+    font-size: 2.2rem;
+}
+
+h3 {
+    font-size: 2rem;
+}
+
+h4 {
+    font-size: 1.5rem;
+}
+
+h5 {
+    font-size: 1.3rem;
+}
+
+h6 {
+    font-size: 1.1rem;
+}
+
+button {
+    cursor: pointer;
+}
+
+input {
+    padding: 12px;
+    border-radius: 8px;
+    outline: 0;
+}
+
+input:focus {
+    border: 1px solid var(--secondary);
+}
+
+.main-container {
+    width: 100%;
+    max-width: 1280px;
+    margin: 0 auto;
+    padding-inline: 20px;
+}
+
+.shad {
+    box-shadow: rgba(0, 0, 0, 0.08) 0px 8px 20px;
+}
+
+.login-form {
+    animation: login 1s ease-in-out forwards;
+}
+
+@keyframes login {
+    from {
+        opacity: 0;
+        transform: translateY(10%);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0%);
+    }
+}
+
+@media screen and (max-width: 767px) {
+    h1 {
+        font-size: 2.2rem;
+    }
+
+    h2 {
+        font-size: 2rem;
+    }
+
+    h3 {
+        font-size: 1.8rem;
+    }
+
+    h4 {
+        font-size: 1.25rem;
+    }
+
+    h5 {
+        font-size: 1.15rem;
+    }
+
+    h6 {
+        font-size: 1rem;
+    }
+}
+
+@media screen and (max-width: 499px) {
+    h1 {
+        font-size: 2rem;
+    }
+
+    h2 {
+        font-size: 1.8rem;
+    }
+
+    h3 {
+        font-size: 1.5rem;
+    }
+
+    h4 {
+        font-size: 1.1rem;
+    }
+
+    h5 {
+        font-size: 1rem;
+    }
+
+    .main-container {
+        padding-inline: 12px;
+    }
+}
+
+/* Urdu/RTL text support with Nastaleeq font */
+/* Apply Nastaleeq to any text that contains Urdu characters */
+
+.urdu-support {
+    font-family: 'Noto Nastaliq Urdu', 'Noto Sans', 'Segoe UI', Tahoma, Geneva, sans-serif;
+    line-height: 2.2;
+    text-align: right;
+}
+
+/* For mixed LTR/RTL text - will auto-detect and use Nastaleeq for Urdu */
+.mixed-text {
+    font-family: 'Noto Nastaliq Urdu', 'Noto Sans', 'Segoe UI', Tahoma, Geneva, sans-serif;
+    unicode-bidi: plaintext;
+    text-align: start;
+    line-height: 2.2;
+}
+
+/* Better word breaking for Urdu */
+.urdu-text {
+    word-break: keep-all;
+    overflow-wrap: anywhere;
+    font-family: 'Noto Nastaliq Urdu', 'Noto Sans', sans-serif;
+    line-height: 2.2;
+}
+
+/* Global Urdu text styling - applies Nastaleeq to all elements with Urdu Unicode range */
+*:lang(ur),
+[lang="ur"],
+[dir="rtl"] {
+    font-family: 'Noto Nastaliq Urdu', 'Noto Sans', sans-serif !important;
+    line-height: 2.2;
+}
+
+/* Ensure buttons and inputs with Urdu text use Nastaleeq */
+button:lang(ur),
+input:lang(ur),
+select:lang(ur),
+textarea:lang(ur) {
+    font-family: 'Noto Nastaliq Urdu', 'Noto Sans', sans-serif !important;
+    line-height: 2.2;
+}
+
+/* Override for any element that might contain Urdu - check for Urdu Unicode range (U+0600 to U+06FF) */
+:is(p, span, div, h1, h2, h3, h4, h5, h6, li, a, button, input, select, textarea, label):has-text-urdu {
+    font-family: 'Noto Nastaliq Urdu', 'Noto Sans', sans-serif !important;
+}

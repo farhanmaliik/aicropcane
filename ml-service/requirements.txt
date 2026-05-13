@@ -1,0 +1,12 @@
+fastapi
+uvicorn
+torch
+torchvision
+pillow
+timm
+pydantic
+gdown
+openai
+pymongo
+python-dotenv
+requests
