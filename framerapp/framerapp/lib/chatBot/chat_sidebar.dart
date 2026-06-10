@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:framerapp/utils/appcolors.dart';
+import 'package:framerapp/views/homescreen/nearby_stores_screen.dart';
 import 'package:provider/provider.dart';
 import 'chat_provider.dart';
 import 'location_service.dart';
@@ -267,6 +268,38 @@ class _ChatSidebarState extends State<ChatSidebar> {
                         ],
                       ),
                     ),
+
+                  const SizedBox(height: 14),
+
+                  // ── NEARBY STORES BUTTON ─────────────────────────
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton.icon(
+                      onPressed: () {
+                        Navigator.pop(context); // close drawer
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => const NearbyStoresScreen(),
+                          ),
+                        );
+                      },
+                      icon: const Icon(Icons.store_outlined, size: 18),
+                      label: const Text('Find Nearby Agri Stores & Experts'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: primaryColor,
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        textStyle: const TextStyle(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                  ),
                 ],
               ),
             ),
