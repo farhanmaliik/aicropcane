@@ -182,7 +182,7 @@ class _NearbyStoresScreenState extends State<NearbyStoresScreen> {
     // nurseries, and agricultural offices/experts within _radiusM metres.
     // (nwr = node + way + relation; human pharmacies/florists are excluded.)
     final query = '''
-[out:json][timeout:60];
+[out:json][timeout:25];
 (
   // Agro & farm supply stores (seeds, pesticides, fertilizers)
   nwr["shop"="agrarian"](around:$_radiusM,$lat,$lon);
@@ -198,37 +198,48 @@ class _NearbyStoresScreenState extends State<NearbyStoresScreen> {
 out center;
 ''';
 
-    // Try multiple Overpass API mirrors for reliability
+    // Public Overpass mirrors. These free servers are frequently overloaded
+    // (HTTP 429/504) so we try several, with a retry each, and fall back to a
+    // Google Maps search if every one is unreachable (see error UI).
     final endpoints = [
       'https://overpass-api.de/api/interpreter',
-      'https://overpass.kumi.systems/api/interpreter',
-      'https://maps.mail.ru/osm/tools/overpass/api/interpreter',
+      'https://overpass.private.coffee/api/interpreter',
+      'https://overpass.osm.ch/api/interpreter',
+      'https://overpass.openstreetmap.fr/api/interpreter',
     ];
 
     http.Response? response;
+    int? lastStatus;
+    outer:
     for (final endpoint in endpoints) {
-      try {
-        final r = await http.post(
-          Uri.parse(endpoint),
-          headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-            'Accept': 'application/json',
-            'User-Agent': 'AiCropCane/1.0 (Flutter crop disease detection app)',
-          },
-          body: 'data=${Uri.encodeComponent(query)}',
-        ).timeout(const Duration(seconds: 45));
-        if (r.statusCode == 200) {
-          response = r;
-          break;
+      // Two attempts per mirror — a busy server often clears on a quick retry.
+      for (int attempt = 0; attempt < 2; attempt++) {
+        try {
+          final r = await http.post(
+            Uri.parse(endpoint),
+            headers: {
+              'Content-Type': 'application/x-www-form-urlencoded',
+              'Accept': 'application/json',
+              'User-Agent': 'AiCropCane/1.0 (Flutter crop disease detection app)',
+            },
+            body: 'data=${Uri.encodeComponent(query)}',
+          ).timeout(const Duration(seconds: 30));
+          if (r.statusCode == 200) {
+            response = r;
+            break outer;
+          }
+          // 429 (rate limited) / 504 (busy) — wait briefly before retrying.
+          lastStatus = r.statusCode;
+          await Future.delayed(const Duration(milliseconds: 800));
+        } catch (_) {
+          // Timeout / network error — fall through to next attempt or mirror.
         }
-      } catch (_) {
-        continue;
       }
     }
 
     if (response == null || response.statusCode != 200) {
       throw Exception(
-          'Overpass API error (${response?.statusCode ?? "no response"}): Unable to reach any server. Check your internet connection.');
+          'Overpass API error (${lastStatus ?? "no response"}): the map data servers are busy. Please try again, or use the Google Maps search.');
     }
 
     final data = jsonDecode(response.body) as Map<String, dynamic>;
@@ -277,6 +288,24 @@ out center;
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Could not open maps')),
       );
+    }
+  }
+
+  // Fallback used when Overpass is unreachable: open a Google Maps search for
+  // agriculture stores, centred on the user's location when we have it.
+  void _openMapsSearch() async {
+    final query = Uri.encodeComponent('agriculture store nursery near me');
+    final url = (_userLat != null && _userLon != null)
+        ? 'https://www.google.com/maps/search/$query/@$_userLat,$_userLon,13z'
+        : 'https://www.google.com/maps/search/$query';
+    try {
+      await launchUrlString(url, mode: LaunchMode.externalApplication);
+    } catch (_) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Could not open maps')),
+        );
+      }
     }
   }
 
@@ -378,6 +407,19 @@ out center;
                   ),
                 ),
               ),
+              const SizedBox(height: 12),
+              OutlinedButton.icon(
+                onPressed: _openMapsSearch,
+                icon: const Icon(Icons.map_outlined, size: 18),
+                label: const Text('Search on Google Maps'),
+                style: OutlinedButton.styleFrom(
+                  foregroundColor: primaryColor,
+                  side: const BorderSide(color: primaryColor),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(30),
+                  ),
+                ),
+              ),
             ],
           ),
         ),
@@ -409,13 +451,7 @@ out center;
               ),
               const SizedBox(height: 24),
               ElevatedButton.icon(
-                onPressed: () async {
-                  final url =
-                      'https://www.google.com/maps/search/agricultural+stores+near+me';
-                  try {
-                    await launchUrlString(url, mode: LaunchMode.externalApplication);
-                  } catch (_) {}
-                },
+                onPressed: _openMapsSearch,
                 icon: const Icon(Icons.map_outlined),
                 label: const Text('Search on Google Maps'),
                 style: ElevatedButton.styleFrom(
